@@ -1,4 +1,6 @@
 from movie import Movie
+
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -15,14 +17,27 @@ class User:
         self.movies = list(filter(lambda movie: movie.name != name, self.movies))
 
     def watched_movies(self):
-        # calculate a list of movies already watched
-        # watched_movies_list = []
-        #
-        # for movie in self.movies:
-        #     if movie.watched:
-        #         watched_movies_list.append(movie)
-        #
-        # return watched_movies_list
+        return list(filter(lambda movie: movie.watched, self.movies))
 
-        # another example using filter()
-        return list(filter(lambda x: x.watched, self.movies))
+    def set_watched(self, name):
+        for movie in self.movies:
+            if movie.name == name:
+                movie.watched = True
+
+    def json(self):
+        return {
+            'name': self.name,
+            'movies': [
+                movie.json() for movie in self.movies
+            ]
+        }
+
+    @classmethod
+    def from_json(cls, json_data):
+        user = User(json_data['name'])
+        movies = []
+        for movie_data in json_data['movies']:
+            movies.append(Movie.from_json(movie_data))
+        user.movies = movies
+
+        return user
